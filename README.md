@@ -60,22 +60,46 @@ App → **http://localhost:5173**
 
 ---
 
-### 3. Deploy to Render (Free Cloud Hosting)
+### 3. Deploy to Vercel (1-Click Fullstack)
 
-The project includes a multi-stage `Dockerfile` and `render.yaml` for 1-click zero-config deployment:
+The project includes `vercel.json` and `api/index.py` for fullstack deployment (React SPA + FastAPI serverless backend):
 
-1. **Push to GitHub**:
-   ```powershell
-   git push origin main
-   ```
-2. Go to **[dashboard.render.com](https://dashboard.render.com)**.
-3. Click **New +** → **Web Service** → Select repository `bhushan1010/Nxtwave`.
-4. Choose **Docker** runtime (automatically detected via `Dockerfile`).
-5. In **Environment Variables**, add:
+1. Go to **[vercel.com/new](https://vercel.com/new)** (sign in with your GitHub account).
+2. Import repository **`bhushan1010/Nxtwave`**.
+3. Under **Environment Variables**, add:
    - `GEMINI_API_KEY` = your Gemini API key
-6. Click **Deploy Web Service**.
+4. Click **Deploy**.
 
-Render will build the React frontend, package the Python backend, auto-seed the database on startup, and give you a public live URL with zero CORS configuration needed.
+Vercel will build the frontend, package the serverless backend, and give you a public HTTPS URL (e.g. `https://nxtwave.vercel.app`) with unified routing and zero CORS setup.
+
+---
+
+### 4. Deploy to Cloudflare Pages (Frontend)
+
+To host the React UI on Cloudflare's edge network:
+
+1. In Cloudflare Dashboard, go to **Workers & Pages** → **Create application** → **Pages** → **Connect to Git**.
+2. Select repository **`bhushan1010/Nxtwave`**.
+3. Set build settings:
+   - **Framework preset**: `Vite`
+   - **Root directory**: `frontend`
+   - **Build command**: `npm run build`
+   - **Build output directory**: `dist`
+4. Under **Environment variables**, set:
+   - `VITE_API_URL` = your deployed backend URL (e.g. from Vercel or Render).
+5. Click **Save and Deploy**. *(SPA routing is pre-configured via `frontend/public/_redirects`)*.
+
+---
+
+### 5. Deploy to Render (Docker Container)
+
+The project also includes a multi-stage `Dockerfile` and `render.yaml` for containerized hosting:
+
+1. Go to **[dashboard.render.com](https://dashboard.render.com)**.
+2. Click **New +** → **Web Service** → Select repository `bhushan1010/Nxtwave`.
+3. Choose **Docker** runtime.
+4. In **Environment Variables**, add `GEMINI_API_KEY`.
+5. Click **Deploy Web Service**.
 
 ## Seeded Data
 

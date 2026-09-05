@@ -2,4 +2,12 @@
 /backend/__pycache__
 /backend/routers/__pycache__
 /backend/services/__pycache__
+/api/__pycache__
 /stitch_ai_project_pulse
+*.db
+pulse.db
+.vercel
+frontend/dist
+frontend/node_modules
+.env
+backend/.env

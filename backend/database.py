@@ -10,7 +10,10 @@ import os
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./pulse.db")
+# On Vercel serverless functions, the root filesystem is read-only; use /tmp
+is_vercel = bool(os.getenv("VERCEL"))
+default_db = "sqlite:////tmp/pulse.db" if is_vercel else "sqlite:///./pulse.db"
+DATABASE_URL = os.getenv("DATABASE_URL", default_db)
 
 # connect_args is SQLite-specific: allows multi-threaded access from FastAPI
 engine = create_engine(
