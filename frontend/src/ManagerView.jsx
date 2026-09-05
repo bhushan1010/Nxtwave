@@ -556,7 +556,7 @@ function ResolveModal({ risk, blocker, onConfirm, onClose }) {
 function StandupTab({ blockers, projectName }) {
   const [updates, setUpdates] = useState([])
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/updates/').then(r => r.json()).then(setUpdates).catch(() => {})
+    api.getAllUpdates().then(setUpdates).catch(() => {})
   }, [])
 
   return (

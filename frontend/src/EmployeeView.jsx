@@ -44,8 +44,7 @@ export default function EmployeeView({ onBack }) {
     setMyBlockers(blks.filter(b => b.status === 'open' || b.status === 'confirmed'))
     // Get project updates for team pulse (all recent)
     try {
-      const updates = await fetch(`http://127.0.0.1:8000/updates/?project_id=${selectedUser.project_id}`)
-        .then(r => r.json())
+      const updates = await api.getAllUpdates(selectedUser.project_id)
       setTeamUpdates(updates.slice(0, 5))
     } catch {}
   }, [userId, users])

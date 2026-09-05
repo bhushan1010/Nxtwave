@@ -1,4 +1,6 @@
-const BASE = 'http://127.0.0.1:8000'
+const BASE = import.meta.env.VITE_API_URL !== undefined
+  ? import.meta.env.VITE_API_URL
+  : (import.meta.env.DEV ? 'http://127.0.0.1:8000' : '')
 
 const req = (path, opts = {}) =>
   fetch(`${BASE}${path}`, {
@@ -19,6 +21,7 @@ export const api = {
   // Updates
   submitUpdate:    (body)         => req('/updates/', { method: 'POST', body: JSON.stringify(body) }),
   getUserUpdates:  (userId)       => req(`/updates/?user_id=${userId}`),
+  getAllUpdates:   (projectId)    => req(projectId ? `/updates/?project_id=${projectId}` : '/updates/'),
 
   // Blockers
   getBlockers:     (projectId, status) => {

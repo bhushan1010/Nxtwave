@@ -60,6 +60,23 @@ App → **http://localhost:5173**
 
 ---
 
+### 3. Deploy to Render (Free Cloud Hosting)
+
+The project includes a multi-stage `Dockerfile` and `render.yaml` for 1-click zero-config deployment:
+
+1. **Push to GitHub**:
+   ```powershell
+   git push origin main
+   ```
+2. Go to **[dashboard.render.com](https://dashboard.render.com)**.
+3. Click **New +** → **Web Service** → Select repository `bhushan1010/Nxtwave`.
+4. Choose **Docker** runtime (automatically detected via `Dockerfile`).
+5. In **Environment Variables**, add:
+   - `GEMINI_API_KEY` = your Gemini API key
+6. Click **Deploy Web Service**.
+
+Render will build the React frontend, package the Python backend, auto-seed the database on startup, and give you a public live URL with zero CORS configuration needed.
+
 ## Seeded Data
 
 | ID | Name | Role | Project |

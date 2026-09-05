@@ -1,6 +1,6 @@
 """
-seed.py — Wipes and re-seeds the database with 2 projects and 4 users.
-Run once to get a clean starting state for demos.
+seed.py — Seeds the database with 2 projects and 6 users.
+Run directly or called automatically on initial startup.
 
 Usage:
     python seed.py
@@ -9,47 +9,54 @@ Usage:
 from database import engine, SessionLocal, Base
 import models  # registers all ORM classes with Base
 
-# ── 1. Recreate all tables ──────────────────────────────────────────────────
-print("Dropping and recreating all tables...")
-Base.metadata.drop_all(bind=engine)
-Base.metadata.create_all(bind=engine)
-print("Tables created.\n")
 
-db = SessionLocal()
+def seed(drop=True):
+    if drop:
+        print("Dropping and recreating all tables...")
+        Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
 
-try:
-    # ── 2. Projects ─────────────────────────────────────────────────────────
-    project_alpha = models.Project(name="Project Alpha — Mobile Redesign")
-    project_beta  = models.Project(name="Project Beta  — API Gateway v2")
-    db.add_all([project_alpha, project_beta])
-    db.flush()  # get IDs before creating users
+    db = SessionLocal()
+    try:
+        if db.query(models.Project).count() > 0 and not drop:
+            print("Database already seeded.")
+            return
 
-    # ── 3. Users ─────────────────────────────────────────────────────────────
-    # Two employees per project + one manager per project
-    users = [
-        models.User(name="Alice Chen",    role=models.UserRole.employee, project_id=project_alpha.id),
-        models.User(name="Bob Patel",     role=models.UserRole.employee, project_id=project_alpha.id),
-        models.User(name="Carol Nguyen",  role=models.UserRole.employee, project_id=project_beta.id),
-        models.User(name="David Kim",     role=models.UserRole.employee, project_id=project_beta.id),
-        models.User(name="Eve Ramirez",   role=models.UserRole.manager,  project_id=project_alpha.id),
-        models.User(name="Frank Hassan",  role=models.UserRole.manager,  project_id=project_beta.id),
-    ]
-    db.add_all(users)
-    db.commit()
+        # ── Projects ─────────────────────────────────────────────────────────────
+        project_alpha = models.Project(name="Project Alpha — Mobile Redesign")
+        project_beta  = models.Project(name="Project Beta  — API Gateway v2")
+        db.add_all([project_alpha, project_beta])
+        db.flush()  # get IDs before creating users
 
-    print("Seeded successfully!\n")
-    print("-- Projects ------------------------------------------")
-    for p in db.query(models.Project).all():
-        print(f"  [{p.id}] {p.name}")
+        # ── Users ─────────────────────────────────────────────────────────────────
+        users = [
+            models.User(name="Alice Chen",    role=models.UserRole.employee, project_id=project_alpha.id),
+            models.User(name="Bob Patel",     role=models.UserRole.employee, project_id=project_alpha.id),
+            models.User(name="Carol Nguyen",  role=models.UserRole.employee, project_id=project_beta.id),
+            models.User(name="David Kim",     role=models.UserRole.employee, project_id=project_beta.id),
+            models.User(name="Eve Ramirez",   role=models.UserRole.manager,  project_id=project_alpha.id),
+            models.User(name="Frank Hassan",  role=models.UserRole.manager,  project_id=project_beta.id),
+        ]
+        db.add_all(users)
+        db.commit()
 
-    print("\n-- Users ---------------------------------------------")
-    for u in db.query(models.User).all():
-        print(f"  [{u.id}] {u.name:<20} role={u.role.value:<10} project_id={u.project_id}")
+        print("Seeded successfully!\n")
+        print("-- Projects ------------------------------------------")
+        for p in db.query(models.Project).all():
+            print(f"  [{p.id}] {p.name}")
 
-    print("\nDone. pulse.db is ready.")
+        print("\n-- Users ---------------------------------------------")
+        for u in db.query(models.User).all():
+            print(f"  [{u.id}] {u.name:<20} role={u.role.value:<10} project_id={u.project_id}")
 
-except Exception as e:
-    db.rollback()
-    raise e
-finally:
-    db.close()
+        print("\nDone. pulse.db is ready.")
+
+    except Exception as e:
+        db.rollback()
+        raise e
+    finally:
+        db.close()
+
+
+if __name__ == "__main__":
+    seed(drop=True)
