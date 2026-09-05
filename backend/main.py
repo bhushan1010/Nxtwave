@@ -47,26 +47,34 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ── Routers ─────────────────────────────────────────────────────────────────
+# ── Routers (both direct and /api prefix) ────────────────────────────────────
 app.include_router(updates_router.router)
+app.include_router(updates_router.router, prefix="/api")
+
 app.include_router(blockers_router.router)
+app.include_router(blockers_router.router, prefix="/api")
+
 app.include_router(digests_router.router)
+app.include_router(digests_router.router, prefix="/api")
 
 
 # ── Misc endpoints ───────────────────────────────────────────────────────────
 
 @app.get("/health", tags=["meta"])
+@app.get("/api/health", tags=["meta"])
 def health_check():
     return {"status": "ok", "app": "AI Project Pulse", "version": "1.0.0"}
 
 
 @app.get("/projects", tags=["projects"])
+@app.get("/api/projects", tags=["projects"])
 def list_projects(db: Session = Depends(get_db)):
     projects = db.query(models.Project).all()
     return [{"id": p.id, "name": p.name} for p in projects]
 
 
 @app.get("/users", tags=["users"])
+@app.get("/api/users", tags=["users"])
 def list_users(db: Session = Depends(get_db)):
     users = db.query(models.User).all()
     return [

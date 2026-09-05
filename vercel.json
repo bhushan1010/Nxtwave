@@ -4,12 +4,16 @@
   "outputDirectory": "frontend/dist",
   "rewrites": [
     {
-      "source": "/(updates|blockers|digests|projects|users|health)(.*)",
+      "source": "/(projects|users|health)",
       "destination": "/api/index.py"
     },
     {
-      "source": "/((?!assets/).*)",
-      "destination": "/index.html"
+      "source": "/(updates|blockers|digests)/:path*",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "/api/index.py"
     }
   ]
 }
