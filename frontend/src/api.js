@@ -18,6 +18,7 @@ export const api = {
 
   // Updates
   submitUpdate:    (body)         => req('/updates/', { method: 'POST', body: JSON.stringify(body) }),
+  getUserUpdates:  (userId)       => req(`/updates/?user_id=${userId}`),
 
   // Blockers
   getBlockers:     (projectId, status) => {

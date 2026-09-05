@@ -192,19 +192,24 @@ def _create_blocker(
 # ── List updates ─────────────────────────────────────────────────────────────
 
 @router.get("/", tags=["updates"])
-def list_updates(project_id: Optional[int] = None, db: Session = Depends(get_db)):
+def list_updates(
+    project_id: Optional[int] = None,
+    user_id:    Optional[int] = None,
+    db:         Session       = Depends(get_db),
+):
     q = db.query(models.Update)
     if project_id:
         q = q.filter(models.Update.project_id == project_id)
-    rows = q.order_by(models.Update.date.desc(), models.Update.id.desc()).all()
+    if user_id:
+        q = q.filter(models.Update.user_id == user_id)
+    rows = q.order_by(models.Update.date.desc(), models.Update.id.desc()).limit(20).all()
     return [
         {
-            "id":          r.id,
-            "user_id":     r.user_id,
-            "project_id":  r.project_id,
-            "date":        str(r.date),
-            "raw_text":    r.raw_text,
-            "parsed_json": r.parsed_json,
+            "id":         r.id,
+            "user_id":    r.user_id,
+            "project_id": r.project_id,
+            "date":       str(r.date),
+            "raw_text":   r.raw_text,
         }
         for r in rows
     ]
