@@ -16,14 +16,29 @@ from routers import blockers as blockers_router
 from routers import digests as digests_router
 import seed
 
-# Create / migrate tables on startup (idempotent)
-Base.metadata.create_all(bind=engine)
+# Create / migrate tables on startup (idempotent, non-blocking)
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception as e:
+    print(f"[Startup] Table migration notice: {e}")
 
 app = FastAPI(
     title="AI Project Pulse",
     description="AI-native standup & project health monitoring — MVP",
     version="1.0.0",
 )
+
+@app.get("/debug-db", tags=["meta"])
+@app.get("/api/debug-db", tags=["meta"])
+def debug_database():
+    import database
+    return {
+        "turso_url_configured": bool(os.getenv("TURSO_DATABASE_URL")),
+        "turso_token_configured": bool(os.getenv("TURSO_AUTH_TOKEN")),
+        "gemini_configured": bool(os.getenv("GEMINI_API_KEY")),
+        "engine_url": str(database.engine.url) if database.engine else None,
+        "init_error": database.init_error,
+    }
 
 # Auto-seed on startup if DB is empty
 @app.on_event("startup")
