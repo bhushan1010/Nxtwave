@@ -18,7 +18,7 @@ from sqlalchemy.orm import Session
 
 import models
 from database import get_db
-from services.claude import generate_digest, DIGEST_SYSTEM
+from services.ai_service import generate_digest, DIGEST_SYSTEM
 
 router = APIRouter(prefix="/digests", tags=["digests"])
 

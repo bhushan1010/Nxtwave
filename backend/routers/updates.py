@@ -22,7 +22,7 @@ from sqlalchemy.orm import Session
 
 import models
 from database import get_db
-from services.claude import parse_update, compare_blocker_to_existing
+from services.ai_service import parse_update, compare_blocker_to_existing
 
 router = APIRouter(prefix="/updates", tags=["updates"])
 

@@ -73,6 +73,32 @@ App → **http://localhost:5173**
 
 ---
 
+## Project Structure
+
+```
+d:\Projects\Nxtwave\
+├── backend\
+│   ├── database.py             # SQLite connection & session
+│   ├── main.py                 # FastAPI application entry point & CORS
+│   ├── models.py               # SQLAlchemy ORM models (Project, User, Update, Blocker, Digest)
+│   ├── seed.py                 # Seeds test projects & users
+│   ├── routers\
+│   │   ├── blockers.py         # Blocker retrieval & confirm/dismiss/resolve actions
+│   │   ├── digests.py          # Manager digest generation & retrieval
+│   │   └── updates.py          # Standup update ingestion & AI dedup pipeline
+│   └── services\
+│       └── ai_service.py       # Gemini API service (parsing, dedup, synthesis)
+└── frontend\
+    ├── src\
+    │   ├── api.js              # Fetch client wrapper
+    │   ├── App.jsx             # Role selector landing view
+    │   ├── EmployeeView.jsx    # Standup composer, pulse stream, tracker
+    │   └── ManagerView.jsx     # Digest review, risk cards, archive
+    └── vite.config.js
+```
+
+---
+
 ## Architecture
 
 ```
@@ -81,11 +107,11 @@ Employee submits raw text
         ▼
 POST /updates/
         │
-        ├─► Gemini: parse → { task, blocker: { present, type, description } }
+        ├─► Gemini (services/ai_service.py): parse → { task, blocker: { present, type, description } }
         │
         └─► If blocker present:
                 ├─► Fetch all open/confirmed blockers for project
-                ├─► Gemini: semantic dedup — same blocker or new?
+                ├─► Gemini (services/ai_service.py): semantic dedup — same blocker or new?
                 ├─► MATCH    → increment days_recurring on existing row
                 └─► NO MATCH → create new Blocker row
 
@@ -96,7 +122,7 @@ POST /digests/generate?project_id=X&date=Y
         │
         ├─► Fetch today's updates
         ├─► Fetch open + confirmed blockers sorted by days_recurring DESC
-        └─► Gemini: { summary (narrative), flagged_risks (days_recurring ≥ 2) }
+        └─► Gemini (services/ai_service.py): { summary (narrative), flagged_risks (days_recurring ≥ 2) }
 ```
 
 ---

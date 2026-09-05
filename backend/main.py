@@ -1,6 +1,5 @@
 """
 main.py — FastAPI application entry point for AI Project Pulse.
-Stage 2: update submission + Claude parsing.
 """
 
 from fastapi import FastAPI, Depends

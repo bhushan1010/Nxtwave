@@ -1,8 +1,10 @@
 """
-services/claude.py — AI parsing layer for AI Project Pulse.
-Switched from Anthropic Claude to Google Gemini (free API tier).
+services/ai_service.py — AI parsing layer for AI Project Pulse (Gemini API).
 
-Public interface is unchanged: parse_update(raw_text) → dict | None
+Public interface:
+- parse_update(raw_text) -> dict | None
+- compare_blocker_to_existing(new_blocker, open_blockers) -> tuple[bool, int | None, str]
+- generate_digest(updates, blockers, project_name, date) -> tuple[dict | None, str]
 """
 
 import json
