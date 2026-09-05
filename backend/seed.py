@@ -1,16 +1,18 @@
 """
 seed.py — Seeds the database with 2 projects and 6 users.
-Run directly or called automatically on initial startup.
+Idempotent: only seeds if the projects table is empty.
 
 Usage:
-    python seed.py
+    python seed.py            # Seeds only if empty (safe)
+    python seed.py --reset    # Wipes all tables and re-seeds
 """
 
+import sys
 from database import engine, SessionLocal, Base
 import models  # registers all ORM classes with Base
 
 
-def seed(drop=True):
+def seed(drop=False):
     if drop:
         print("Dropping and recreating all tables...")
         Base.metadata.drop_all(bind=engine)
@@ -18,9 +20,13 @@ def seed(drop=True):
 
     db = SessionLocal()
     try:
-        if db.query(models.Project).count() > 0 and not drop:
-            print("Database already seeded.")
+        # Idempotent check: only seed if the database is empty
+        existing_count = db.query(models.Project).count()
+        if existing_count > 0 and not drop:
+            print(f"Database already contains {existing_count} projects; skipping seed.")
             return
+
+        print("Seeding initial projects and users...")
 
         # ── Projects ─────────────────────────────────────────────────────────────
         project_alpha = models.Project(name="Project Alpha — Mobile Redesign")
@@ -49,7 +55,7 @@ def seed(drop=True):
         for u in db.query(models.User).all():
             print(f"  [{u.id}] {u.name:<20} role={u.role.value:<10} project_id={u.project_id}")
 
-        print("\nDone. pulse.db is ready.")
+        print("\nDatabase is ready.")
 
     except Exception as e:
         db.rollback()
@@ -59,4 +65,5 @@ def seed(drop=True):
 
 
 if __name__ == "__main__":
-    seed(drop=True)
+    force_reset = "--reset" in sys.argv
+    seed(drop=force_reset)
