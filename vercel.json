@@ -5,7 +5,39 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api"
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/api",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/projects",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/users",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/health",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/debug-db",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/updates/(.*)",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/blockers/(.*)",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/digests/(.*)",
+      "destination": "/api/index.py"
     }
   ]
 }
